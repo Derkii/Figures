@@ -47,8 +47,9 @@ namespace Player
         private async UniTask Move(Vector3[] path)
         {
             transform.position = _path.GetPath().ElementAt(0);
-            _lineRenderer.positionCount = 2;
+            _lineRenderer.positionCount = 1;
             _lineRenderer.SetPosition(0, transform.position);
+
 
             for (int i = 1; i < path.Length; i++)
             {
@@ -57,7 +58,11 @@ namespace Player
                 _currentTween = transform.DOMove(endValue,
                     (endValue - startPosition).magnitude / _speed);
                 _currentTween.SetUpdate(UpdateType.Manual);
-                _currentTween.OnUpdate(() => { _lineRenderer.SetPosition(1, transform.position); });
+                _currentTween.OnUpdate(() =>
+                {
+                    _lineRenderer.positionCount++;
+                    _lineRenderer.SetPosition(_lineRenderer.positionCount - 1, transform.position);
+                });
                 await _currentTween.AsyncWaitForCompletion();
             }
 
